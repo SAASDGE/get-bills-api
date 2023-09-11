@@ -41,7 +41,6 @@ REGARDING_MAP = {
 
 def runcmd(link, path_to_download):
     file_name = re.search(r".+/(?P<file_name>.+\.pdf).", link).group('file_name')
-    print(link, file_name)
     subprocess.run(['wget', '-q', '-c', link,'-O', f'{path_to_download}/{file_name}'], check=True)
 
 
@@ -69,7 +68,7 @@ def get_bills_by_emission_date(api_session, agents):
                     bills_list.append(bill["bill_generated"])
 
             url = data['next']
-        download_bills(bills_list[:30], path_to_download)
+        download_bills(bills_list, path_to_download)
 
 
 def get_agents(api_session):
