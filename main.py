@@ -40,8 +40,8 @@ REGARDING_MAP = {
 
 
 def runcmd(link, path_to_download):
-    file_name = re.search(r".+/(?P<file_name>.+\.pdf).", link).group('file_name')
-    subprocess.run(['wget', '-q', '-c', link,'-O', f'{path_to_download}/{file_name}'], check=True)
+    file_name = re.search(r".+/(?P<file_name>.+\.pdf).", link).group('file_name').replace("%20", "_")
+    subprocess.run(['wget', '-q', link,'-O', f'{path_to_download}/{file_name}'], check=True)
 
 
 def download_bills(bills, path_to_download):
