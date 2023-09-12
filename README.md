@@ -16,4 +16,5 @@ Esse código faz o download das faturas por meio da API da Digital Grid.
 
 # Resultado
 As faturas serão baixadas no caminho especificado na variável PATH_TO_DOWNLOAD e serão organizados por
-agente, ano e mês. Somente serão baixadas faturas que possuam data de emissão.
+agente, ano e mês. Para agentes que possuam carteira bancária registrada para suas usinas, as faturas serão baixadas por data
+de emissão. Caso contrário, as faturas serão baixadas de acordo com a referência do mês de geração.

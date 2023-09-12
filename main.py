@@ -8,10 +8,10 @@ import sys
 import re
 today = datetime.now()
 API_TOKEN = config('API_TOKEN', default=None)
-ISSUED_AT_MONTH = config('ISSUED_AT_MONTH', default=today.month)
-ISSUED_AT_YEAR = config('ISSUED_AT_YEAR', default=today.year)
+ISSUED_AT_MONTH = config('ISSUED_AT_MONTH', default=today.month, cast=int)
+ISSUED_AT_YEAR = config('ISSUED_AT_YEAR', default=today.year, cast=int)
 PATH_TO_DOWNLOAD = config('PATH_TO_DOWNLOAD', default=f'{os.getcwd()}/faturas')
-API_BASE_URL = config('API_BASE_URL', default='')
+API_BASE_URL = "https://gestao.dg.energy/api/v1"
 
 if not ISSUED_AT_MONTH:
     ISSUED_AT_MONTH = today.month
@@ -46,14 +46,17 @@ def runcmd(link, path_to_download):
 
 def download_bills(bills, path_to_download):
     for index, bill in enumerate(bills):
-        print(f"Downloading {index + 1}/{len(bills)}")
+        print(f"Baixando {index + 1}/{len(bills)}")
         runcmd(bill, path_to_download)
 
 
 def get_bills_by_emission_date(api_session, agents):
     for agent_name, agent_id in agents.items():
         bills_list = []
-        url = f'{API_BASE_URL}/bills/?installation_data__agent={agent_id}&issued_at__month={ISSUED_AT_MONTH}&issued_at__year={ISSUED_AT_YEAR}'
+        if agent_id == 65:
+            url = f'{API_BASE_URL}/bills/?installation_data__agent=65&generation_month__reference__month={ISSUED_AT_MONTH}&generation_month__reference__year={ISSUED_AT_YEAR}&payment_status=Aprovação'
+        else:
+            url = f'{API_BASE_URL}/bills/?installation_data__agent={agent_id}&issued_at__month={ISSUED_AT_MONTH}&issued_at__year={ISSUED_AT_YEAR}'
         print(f"\nBaixando faturas do Agente {agent_name}:")
         path_to_download = os.path.join(PATH_TO_DOWNLOAD, agent_name, f'{ISSUED_AT_YEAR}/{REGARDING_MAP[ISSUED_AT_MONTH]}')
         os.makedirs(path_to_download, exist_ok=True)
@@ -65,8 +68,8 @@ def get_bills_by_emission_date(api_session, agents):
             data = response.json()
             if response.status_code == HTTPStatus.OK:
                 for bill in data['results']:
-                    bills_list.append(bill["bill_generated"])
-
+                    if bill_file_url := bill["bill_generated"]:
+                        bills_list.append(bill_file_url)
             url = data['next']
         download_bills(bills_list, path_to_download)
 
