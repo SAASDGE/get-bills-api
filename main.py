@@ -53,10 +53,7 @@ def download_bills(bills, path_to_download):
 def get_bills_by_emission_date(api_session, agents):
     for agent_name, agent_id in agents.items():
         bills_list = []
-        if agent_id == 65:
-            url = f'{API_BASE_URL}/bills/?installation_data__agent=65&generation_month__reference__month={ISSUED_AT_MONTH}&generation_month__reference__year={ISSUED_AT_YEAR}&payment_status=Aprovação'
-        else:
-            url = f'{API_BASE_URL}/bills/?installation_data__agent={agent_id}&issued_at__month={ISSUED_AT_MONTH}&issued_at__year={ISSUED_AT_YEAR}'
+        url = f'{API_BASE_URL}/bills/?installation_data__agent={agent_id}&issued_at__month={ISSUED_AT_MONTH}&issued_at__year={ISSUED_AT_YEAR}'
         print(f"\nBaixando faturas do Agente {agent_name}:")
         path_to_download = os.path.join(PATH_TO_DOWNLOAD, agent_name, f'{ISSUED_AT_YEAR}/{REGARDING_MAP[ISSUED_AT_MONTH]}')
         os.makedirs(path_to_download, exist_ok=True)
